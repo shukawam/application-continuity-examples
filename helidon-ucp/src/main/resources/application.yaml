@@ -25,10 +25,3 @@ oracle:
           inactiveConnectionTimeout: 10
           queryTimeout: 600
           fastConnectionFailoverEnabled: false
-
-com:
-  arjuna:
-    ats:
-      arjuna:
-        coordinator:
-          defaultTimeout: 300 

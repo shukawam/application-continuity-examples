@@ -15,7 +15,7 @@ Spring Boot による ADB(ATP) + ucp を用いた Application Continuity の動�
 -- Transparent Application Continuity(TAC) を有効化するサービス名の検索
 SELECT name, failover_type FROM DBA_SERVICES;
 
--- Transparent Application Continuity(TAC) を有効化する
+-- TAC を有効化する
 BEGIN
     DBMS_APP_CONT_ADMIN.ENABLE_TAC(
         'SYA6VPHK3PZLKHQ_SHUKAWAMATP_high.adb.oraclecloud.com', 'AUTO', 600

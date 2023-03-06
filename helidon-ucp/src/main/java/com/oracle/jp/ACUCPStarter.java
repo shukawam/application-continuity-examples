@@ -1,10 +1,9 @@
 package com.oracle.jp;
 
-import java.math.BigDecimal;
-
 import jakarta.inject.Inject;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
@@ -22,7 +21,7 @@ public class ACUCPStarter {
         this.ac_UCPService = ac_UCPService;
     }
 
-    @GET
+    @POST
     @Path("/start")
     @Produces(MediaType.TEXT_PLAIN)
     public String start() {

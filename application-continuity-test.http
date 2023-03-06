@@ -1,0 +1,12 @@
+@localhost = http://localhost
+@port = 8080
+@basePath = ucp/ac
+
+### Insert 100 rows
+POST {{localhost}}:{{port}}/{{basePath}}/start HTTP/1.1
+
+### Count rows in table
+GET {{localhost}}:{{port}}/{{basePath}}/count HTTP/1.1
+
+### Delete All rows in table
+DELETE {{localhost}}:{{port}}/{{basePath}}/delete HTTP/1.1

@@ -12,10 +12,10 @@ Helidon MP による ADB(ATP) + ucp を用いた Application Continuity の動�
 `ADMIN` ユーザーで実行
 
 ```sql
--- TAC を有効化するサービス名の検索
+-- Transparent Application Continuity(TAC) を有効化するサービス名の検索
 SELECT name, failover_type FROM DBA_SERVICES;
 
--- Transparent Application Continuity(TAC) の有効化する
+-- TAC を有効化する
 BEGIN
     DBMS_APP_CONT_ADMIN.ENABLE_TAC(
         'SYA6VPHK3PZLKHQ_SHUKAWAMATP_high.adb.oraclecloud.com', 'AUTO', 600
@@ -26,10 +26,10 @@ END;
 -- TAC が有効かどうか確認する
 SELECT name, failover_type FROM DBA_SERVICES;
 
--- （検証に応じてオプション）Transparent Application Continuity(TAC) を無効化する
+-- （検証に応じてオプション）TAC を無効化する
 BEGIN
-    DBMS_APP_CONT_ADMIN.DISABLE_TAC(
-        'SYA6VPHK3PZLKHQ_SHUKAWAMATP_high.adb.oraclecloud.com', 'AUTO', 600
+    DBMS_APP_CONT_ADMIN.DISABLE_FAILOVER(
+        'SYA6VPHK3PZLKHQ_SHUKAWAMATP_high.adb.oraclecloud.com'
     );
 END;
 /
@@ -95,9 +95,9 @@ helidon dev \
 - `/ucp/ac/count` - 該当テーブル（AC_TEST_TABLE）に含まれている行数をカウントして返します
 - `/ucp/ac/delete` - 該当テーブル（AC_TEST_TABLE）に含まれている全ての行を削除します
 
-これらの API を用いて、100 行の insert 時に ATP に再起動をかけ、アプリケーションで例外が発生しないことを確認します。
+これらの API を用いて、100 行の insert 時に ATP に再起動をかけ、クライアントに例外が返されないことを確認します。
 
-まずは、AC が無効な状態で `/ucp/ac/start` を実行し、ATP に再起動を仕掛けます。
+まずは、TAC が無効な状態で `/ucp/ac/start` を実行し、ATP に再起動を仕掛けます。
 
 ```bash
 curl -X POST http://localhost:8080/ucp/ac/start
@@ -419,14 +419,14 @@ Caused by: java.io.IOException: Connection closed
         ... 79 more
 ```
 
-テーブルに含まれている行数を確認してみます。0 行なことが確認できます。
+テーブルに含まれている行数を確認してみると、0 行なことが確認できます。
 
 ```bash
 curl http://localhost:8080/ucp/ac/count
 Include 0 rows.
 ```
 
-次に、AC を有効にし同じように `/ucp/ac/start` を実行し。ATP に再起動を仕掛けると、今度は例外（ロールバック）が発生せずにすべての行の insert が行われていることが確認できます。
+次に、TAC を有効にし同じように `/ucp/ac/start` を実行し。ATP に再起動を仕掛けると、今度は例外（ロールバック）が発生せずにすべての行の insert が行われていることが確認できます。
 
 ```bash
 curl -X POST http://localhost:8080/ucp/ac/start
@@ -442,4 +442,5 @@ Include 100 rows.
 
 ## 参考
 
-- [Autonomous Database でのアプリケーション・コンティニュイティの構成](https://docs.oracle.com/cd//E83857_01/paas/autonomous-database/adbsa/application-continuity-configure.html#GUID-CCDFE8FE-E4D1-44C6-92E5-354644195382)
+- [Autonomous Database でのアプリケーション・コンティニュイティの構成](https://docs.oracle.com/cd//E83857_01/paas/autonomous-database/adbsa/application-continuity-configure.html)
+- [Helidon FAQ - JTA-Related Topics](https://github.com/helidon-io/helidon/wiki/FAQ#jta-related-topics)

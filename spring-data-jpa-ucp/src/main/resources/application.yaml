@@ -1,12 +1,9 @@
 spring:
   datasource:
-    # Provide the database URL, username, password.
     url: jdbc:oracle:thin:@shukawamatp_high?TNS_ADMIN=/home/shukawam/work/wallet/Wallet_shukawamatp
     username: ADMIN
     password: Passw0rd19941009
-    # Properties for Universal Connection Pool(UCP)
     driver-class-name: oracle.jdbc.OracleDriver
-    # For using Replay datasource
     oracleucp:
       connection-factory-class-name: oracle.jdbc.replay.OracleDataSourceImpl
       sql-for-validate-connection: select * from dual
@@ -16,3 +13,4 @@ spring:
       max-pool-size: 1
       inactive-connection-timeout: 10
       query-timeout: 600
+      fast-connection-failover-enabled: false

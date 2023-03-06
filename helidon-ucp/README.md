@@ -39,11 +39,8 @@ END;
 
 ### application.yaml
 
-以下の 2 点が設定ポイント。その他は環境に合わせて設定してください。
-
-- `connectionFactoryClassName: oracle.jdbc.replay.OracleDataSourceImpl`
 - `fastConnectionFailoverEnabled: false`
-  - ADB で試す場合は、FAN イベントを**明示的**に無効にしないと起動時に warning ログが出力される
+  - ADB で試す場合は、FAN イベントを**明示的**に無効にしないと起動時に warning ログが出力されます
 
 ```yaml
 ucp:

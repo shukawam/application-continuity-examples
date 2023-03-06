@@ -39,20 +39,13 @@ END;
 
 ### application.yaml
 
-以下が設定ポイント。その他は環境に合わせて設定してください。
-
-- `connection-factor-class-name: oracle.jdbc.replay.OracleDataSourceImpl`
-
 ```yaml
 spring:
   datasource:
-    # Provide the database URL, username, password.
     url:
     username:
     password:
-    # Properties for Universal Connection Pool(UCP)
     driver-class-name: oracle.jdbc.OracleDriver
-    # For using Replay datasource
     oracleucp:
       connection-factory-class-name: oracle.jdbc.replay.OracleDataSourceImpl
       sql-for-validate-connection: select * from dual
@@ -62,6 +55,7 @@ spring:
       max-pool-size: 1
       inactive-connection-timeout: 10
       query-timeout: 600
+      fast-connection-failover-enabled: false # 何故か設定が効かない（原因調査中）
 ```
 
 ### FAN の無効化
@@ -97,7 +91,7 @@ pom.xml から依存を抜くことで対応可能。
 ./mvnw clean package -DskipTests
 ```
 
-起動します。デフォルトのトランザクションタイムアウトが 60 秒なのに対し、1 秒 sleep を挟みながら 100 行 insert するため、起動時のパラメータでタイムアウトの設定を変更しています。（参考: [https://github.com/helidon-io/helidon/wiki/FAQ#jta-related-topics](https://github.com/helidon-io/helidon/wiki/FAQ#jta-related-topics)）
+起動します。
 
 ```bash
 java -jar target/spring-data-jpa-ucp-1.0.0.jar

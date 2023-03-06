@@ -12,36 +12,24 @@ Helidon MP による ADB(ATP) + ucp を用いた Application Continuity の動�
 `ADMIN` ユーザーで実行
 
 ```sql
-SELECT name, drain_timeout FROM v$services;
+-- TAC を有効化するサービス名の検索
+SELECT name, failover_type FROM DBA_SERVICES;
 
--- SYA6VPHK3PZLKHQ_SHUKAWAMATP_low.adb.oraclecloud.com 0
--- SYA6VPHK3PZLKHQ_SHUKAWAMATP_tpurgent.adb.oraclecloud.com 0
--- SYA6VPHK3PZLKHQ_SHUKAWAMATP_high.adb.oraclecloud.com 0
--- SYA6VPHK3PZLKHQ_SHUKAWAMATP_medium.adb.oraclecloud.com  0
--- sya6vphk3pzlkhq_shukawamatp 0
--- SYA6VPHK3PZLKHQ_SHUKAWAMATP_tp.adb.oraclecloud.com 0
-
--- Application Continuity の有効化
+-- Transparent Application Continuity(TAC) の有効化する
 BEGIN
-    DBMS_CLOUD_ADMIN.ENABLE_APP_CONT(
-        service_name => 'SYA6VPHK3PZLKHQ_SHUKAWAMATP_high.adb.oraclecloud.com'
+    DBMS_APP_CONT_ADMIN.ENABLE_TAC(
+        'SYA6VPHK3PZLKHQ_SHUKAWAMATP_high.adb.oraclecloud.com', 'AUTO', 600
     );
 END;
 /
 
-SELECT name, drain_timeout FROM v$services;
+-- TAC が有効かどうか確認する
+SELECT name, failover_type FROM DBA_SERVICES;
 
--- SYA6VPHK3PZLKHQ_SHUKAWAMATP_low.adb.oraclecloud.com 0
--- SYA6VPHK3PZLKHQ_SHUKAWAMATP_tpurgent.adb.oraclecloud.com 0
--- SYA6VPHK3PZLKHQ_SHUKAWAMATP_high.adb.oraclecloud.com 300
--- SYA6VPHK3PZLKHQ_SHUKAWAMATP_medium.adb.oraclecloud.com  0
--- sya6vphk3pzlkhq_shukawamatp 0
--- SYA6VPHK3PZLKHQ_SHUKAWAMATP_tp.adb.oraclecloud.com 0
-
--- Application Continuity の無効化
+-- （検証に応じてオプション）Transparent Application Continuity(TAC) を無効化する
 BEGIN
-    DBMS_CLOUD_ADMIN.DISABLE_APP_CONT(
-        service_name => 'SYA6VPHK3PZLKHQ_SHUKAWAMATP_high.adb.oraclecloud.com'
+    DBMS_APP_CONT_ADMIN.DISABLE_TAC(
+        'SYA6VPHK3PZLKHQ_SHUKAWAMATP_high.adb.oraclecloud.com', 'AUTO', 600
     );
 END;
 /
@@ -103,16 +91,16 @@ helidon dev \
 
 本アプリケーションは、以下のエンドポイントが実装されています。
 
-- /ucp/ac/start - 1 秒の sleep を挟みながら 100 行のダミーデータを insert します
-- /ucp/ac/count - 該当テーブル（AC_TEST_TABLE）に含まれている行数をカウントして返します
-- /ucp/ac/delete - 該当テーブル（AC_TEST_TABLE）に含まれている全ての行を削除します
+- `/ucp/ac/start` - 1 秒の sleep を挟みながら 100 行のダミーデータを insert します
+- `/ucp/ac/count` - 該当テーブル（AC_TEST_TABLE）に含まれている行数をカウントして返します
+- `/ucp/ac/delete` - 該当テーブル（AC_TEST_TABLE）に含まれている全ての行を削除します
 
 これらの API を用いて、100 行の insert 時に ATP に再起動をかけ、アプリケーションで例外が発生しないことを確認します。
 
 まずは、AC が無効な状態で `/ucp/ac/start` を実行し、ATP に再起動を仕掛けます。
 
 ```bash
-curl http://localhost:8080/ucp/ac/start
+curl -X POST http://localhost:8080/ucp/ac/start
 ```
 
 アプリケーションのログが以下のように出力され例外（ロールバック）が発生していることが確認できます。
@@ -441,7 +429,7 @@ Include 0 rows.
 次に、AC を有効にし同じように `/ucp/ac/start` を実行し。ATP に再起動を仕掛けると、今度は例外（ロールバック）が発生せずにすべての行の insert が行われていることが確認できます。
 
 ```bash
-curl http://localhost:8080/ucp/ac/start
+curl -X POST http://localhost:8080/ucp/ac/start
 ok
 ```
 
@@ -452,6 +440,6 @@ curl http://localhost:8080/ucp/ac/count
 Include 100 rows.
 ```
 
-## Special Thanks
+## 参考
 
-- [Application Continuity を Java の UCP(ucp.jar) と Autonomous Database の ATP で試してみる。(Oracle Cloud Infrastructure)](https://qiita.com/ora_gonsuke777/items/5e348a4f444b2d3643d0)
+- [Autonomous Database でのアプリケーション・コンティニュイティの構成](https://docs.oracle.com/cd//E83857_01/paas/autonomous-database/adbsa/application-continuity-configure.html#GUID-CCDFE8FE-E4D1-44C6-92E5-354644195382)

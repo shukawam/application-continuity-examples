@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:oracle:thin:@shukawamatp_high?TNS_ADMIN=/home/shukawam/work/wallet/Wallet_shukawamatp
-    username: ADMIN
-    password: Passw0rd19941009
+    url: 
+    username: 
+    password: 
     driver-class-name: oracle.jdbc.OracleDriver
     oracleucp:
       connection-factory-class-name: oracle.jdbc.replay.OracleDataSourceImpl
